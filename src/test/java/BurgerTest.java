@@ -26,13 +26,13 @@ public class BurgerTest {
     Bun mockBun;
 
     @Mock
-    Ingredient mockIngredient1;
+    Ingredient mockIngredientHotSauce;
 
     @Mock
-    Ingredient mockIngredient2;
+    Ingredient mockIngredientDinosaurFilling;
 
     @Mock
-    Ingredient mockIngredient3;
+    Ingredient mockIngredientChiliSauce;
 
     @Before
     public void setUp() {
@@ -47,7 +47,7 @@ public class BurgerTest {
 
     @Test
     public void addIngredientTest() {
-        burger.addIngredient(mockIngredient1);
+        burger.addIngredient(mockIngredientHotSauce);
 
         SoftAssertions softly = new SoftAssertions();
 
@@ -57,15 +57,15 @@ public class BurgerTest {
 
         softly.assertThat(burger.ingredients.get(0))
                 .as("Добавленный ингредиент должен совпадать с mock-ингредиентом")
-                .isEqualTo(mockIngredient1);
+                .isEqualTo(mockIngredientHotSauce);
         softly.assertAll();
     }
 
     @Test
     public void removeIngredientTest() {
-        burger.ingredients.add(mockIngredient1);
-        burger.ingredients.add(mockIngredient2);
-        burger.ingredients.add(mockIngredient3);
+        burger.ingredients.add(mockIngredientHotSauce);
+        burger.ingredients.add(mockIngredientDinosaurFilling);
+        burger.ingredients.add(mockIngredientChiliSauce);
         burger.removeIngredient(2);
 
         SoftAssertions softly = new SoftAssertions();
@@ -76,13 +76,13 @@ public class BurgerTest {
 
         softly.assertThat(burger.ingredients.get(0))
                 .as("Первый ингредиент должен остаться")
-                .isEqualTo(mockIngredient1);
+                .isEqualTo(mockIngredientHotSauce);
 
         softly.assertThat(burger.ingredients.get(1))
                 .as("Последний ингредиент должен сдвинуться")
-                .isEqualTo(mockIngredient2);
+                .isEqualTo(mockIngredientDinosaurFilling);
 
-        softly.assertThat(burger.ingredients.contains(mockIngredient3))
+        softly.assertThat(burger.ingredients.contains(mockIngredientChiliSauce))
                 .as("Второй ингредиент должен быть удален")
                 .isFalse();
 
@@ -90,9 +90,9 @@ public class BurgerTest {
 
     @Test
     public void moveIngredientTest() {
-        burger.ingredients.add(mockIngredient1);
-        burger.ingredients.add(mockIngredient2);
-        burger.ingredients.add(mockIngredient3);
+        burger.ingredients.add(mockIngredientHotSauce);
+        burger.ingredients.add(mockIngredientDinosaurFilling);
+        burger.ingredients.add(mockIngredientChiliSauce);
         burger.moveIngredient(0, 2);
 
         SoftAssertions softly = new SoftAssertions();
@@ -103,15 +103,15 @@ public class BurgerTest {
 
         softly.assertThat(burger.ingredients.get(0))
                 .as("Первый элемент должен стать ingredient1")
-                .isEqualTo(mockIngredient2);
+                .isEqualTo(mockIngredientDinosaurFilling);
 
         softly.assertThat(burger.ingredients.get(1))
                 .as("Второй элемент должен стать ingredient2")
-                .isEqualTo(mockIngredient3);
+                .isEqualTo(mockIngredientChiliSauce);
 
         softly.assertThat(burger.ingredients.get(2))
                 .as("Третий элемент должен стать ingredient0")
-                .isEqualTo(mockIngredient1);
+                .isEqualTo(mockIngredientHotSauce);
 
     }
 
@@ -119,19 +119,19 @@ public class BurgerTest {
     public static class BurgerPriceTest {
 
         private final float bunPrice;
-        private final float ingredientPrice1;
-        private final float ingredientPrice2;
+        private final float ingredientHotSaucePrice;
+        private final float ingredientDinosaurFillingPrice;
         private final float expectedPrice;
 
         private Burger burger;
         private Bun mockBun;
-        private Ingredient mockIngredient1;
-        private Ingredient mockIngredient2;
+        private Ingredient mockIngredientHotSauce;
+        private Ingredient mockIngredientDinosaurFilling;
 
-        public BurgerPriceTest(float bunPrice, float ingredientPrice1, float ingredientPrice2, float expectedPrice) {
+        public BurgerPriceTest(float bunPrice, float ingredientHotSaucePrice, float ingredientDinosaurFillingPrice, float expectedPrice) {
             this.bunPrice = bunPrice;
-            this.ingredientPrice1 = ingredientPrice1;
-            this.ingredientPrice2 = ingredientPrice2;
+            this.ingredientHotSaucePrice = ingredientHotSaucePrice;
+            this.ingredientDinosaurFillingPrice = ingredientDinosaurFillingPrice;
             this.expectedPrice = expectedPrice;
         }
 
@@ -149,38 +149,59 @@ public class BurgerTest {
         public void getPriceTest() {
             burger = new Burger();
             mockBun = mock(Bun.class);
-            mockIngredient1 = mock(Ingredient.class);
-            mockIngredient2 = mock(Ingredient.class);
+            mockIngredientHotSauce = mock(Ingredient.class);
+            mockIngredientDinosaurFilling = mock(Ingredient.class);
 
             when(mockBun.getPrice()).thenReturn(bunPrice);
-            when(mockIngredient1.getPrice()).thenReturn(ingredientPrice1);
-            when(mockIngredient2.getPrice()).thenReturn(ingredientPrice2);
+            when(mockIngredientHotSauce.getPrice()).thenReturn(ingredientHotSaucePrice);
+            when(mockIngredientDinosaurFilling.getPrice()).thenReturn(ingredientDinosaurFillingPrice);
 
             burger.bun = mockBun;
-            burger.ingredients.add(mockIngredient1);
-            burger.ingredients.add(mockIngredient2);
+            burger.ingredients.add(mockIngredientHotSauce);
+            burger.ingredients.add(mockIngredientDinosaurFilling);
 
             float actualPrice = burger.getPrice();
 
             assertEquals("Цена должна быть рассчитана правильно", expectedPrice, actualPrice, 0.01f);
-
-            verify(mockBun, times(1)).getPrice();
-            verify(mockIngredient1, times(1)).getPrice();
-            verify(mockIngredient2, times(1)).getPrice();
         }
+    }
+
+    @Test
+    public void getPriceCallsBunGetPriceOnceTest() {
+        burger = new Burger();
+        mockBun = mock(Bun.class);
+        burger.bun = mockBun;
+
+        burger.getPrice();
+
+        verify(mockBun, times(1)).getPrice();
+    }
+
+    @Test
+    public void getPriceCallsIngredientGetPriceOnceTest() {
+        burger = new Burger();
+        mockBun = mock(Bun.class);
+        burger.bun = mockBun;
+        mockIngredientDinosaurFilling = mock(Ingredient.class);
+
+        burger.ingredients.add(mockIngredientDinosaurFilling);
+
+        burger.getPrice();
+
+        verify(mockIngredientDinosaurFilling, times(1)).getPrice();
     }
 
     @Test
     public void getReceiptTest() {
 
         burger.bun = mockBun;
-        burger.ingredients.add(mockIngredient2);
+        burger.ingredients.add(mockIngredientDinosaurFilling);
 
         Burger burgerSpy = Mockito.spy(burger);
 
         when(mockBun.getName()).thenReturn("white bun");
-        when(mockIngredient2.getType()).thenReturn(FILLING);
-        when(mockIngredient2.getName()).thenReturn("dinosaur");
+        when(mockIngredientDinosaurFilling.getType()).thenReturn(FILLING);
+        when(mockIngredientDinosaurFilling.getName()).thenReturn("dinosaur");
         when(burgerSpy.getPrice()).thenReturn(500.0f);
 
         String actualReceipt = burgerSpy.getReceipt();
@@ -188,14 +209,14 @@ public class BurgerTest {
         String expectedReceipt;
         if (actualReceipt.contains("\r\n\r\nPrice:")) {
             expectedReceipt = String.format("(==== %s ====)%n", mockBun.getName()) +
-                    String.format("= %s %s =%n", mockIngredient2.getType().name().toLowerCase(), mockIngredient2.getName()) +
+                    String.format("= %s %s =%n", mockIngredientDinosaurFilling.getType().name().toLowerCase(), mockIngredientDinosaurFilling.getName()) +
                     String.format("(==== %s ====)%n", mockBun.getName()) +
-                    String.format("%nPrice: %.6f%n", (mockBun.getPrice() * 2) + mockIngredient2.getPrice());
+                    String.format("%nPrice: %.6f%n", (mockBun.getPrice() * 2) + mockIngredientDinosaurFilling.getPrice());
         } else {
             expectedReceipt = String.format("(==== %s ====)%n", mockBun.getName()) +
-                    String.format("= %s %s =%n", mockIngredient2.getType().name().toLowerCase(), mockIngredient2.getName()) +
+                    String.format("= %s %s =%n", mockIngredientDinosaurFilling.getType().name().toLowerCase(), mockIngredientDinosaurFilling.getName()) +
                     String.format("(==== %s ====)%n", mockBun.getName()) +
-                    String.format("Price: %.6f%n", (mockBun.getPrice() * 2) + mockIngredient2.getPrice());
+                    String.format("Price: %.6f%n", (mockBun.getPrice() * 2) + mockIngredientDinosaurFilling.getPrice());
         }
 
         MatcherAssert.assertThat("Неверный рецепт",
