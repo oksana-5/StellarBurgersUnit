@@ -1,4 +1,4 @@
-# Diplom_1
+# StellarBurgersUnit
 ## Автотесты для приложения космической бургерной Stellar Burgers.
 
 ### Юнит-тесты
